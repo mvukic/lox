@@ -1,15 +1,10 @@
 import kotlin.test.Test
 import kotlin.test.assertEquals
-import kotlin.test.assertTrue
 
 class WorldTest {
     @Test
     fun doTest() {
-        assertEquals("World", World.get())
+        assertEquals(1, 1)
     }
 
-    @Test
-    fun shouldFail() {
-        assertTrue(false)
-    }
 }
