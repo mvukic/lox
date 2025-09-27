@@ -1,8 +1,9 @@
 package model
 
 interface ExpressionVisitor<R> {
-    fun visitBinaryExpr(expr: Binary): R
-    fun visitUnaryExpr(expr: Unary): R
-    fun visitGroupingExpr(expr: Grouping): R
-    fun visitLiteralExpr(expr: Literal): R
+    fun visitBinaryExpr(expr: BinaryExpression): R
+    fun visitUnaryExpr(expr: UnaryExpression): R
+    fun visitGroupingExpr(expr: GroupingExpression): R
+    fun visitLiteralExpr(expr: LiteralExpression): R
+    fun visitVarExpression(expr: VarExpression): R
 }

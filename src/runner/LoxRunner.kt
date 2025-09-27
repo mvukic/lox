@@ -32,14 +32,11 @@ class LoxRunner {
 
     private fun run(source: String) {
         val tokens = LoxScanner(source).scanTokens()
-        val expression = LoxParser(tokens).parse()
+        val statements = LoxParser(tokens).parse()
 
         if (LoxErrorHandler.hadError) return
 
-        if (expression != null) {
-            interpreter.interpret(expression)
-        }
-
+        interpreter.interpret(statements)
     }
 
 }

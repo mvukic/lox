@@ -9,19 +9,19 @@ class AstPrinter : ExpressionVisitor<String> {
         return expression.accept(this)
     }
 
-    override fun visitBinaryExpr(expr: Binary): String {
+    override fun visitBinaryExpr(expr: BinaryExpression): String {
         return parenthesize(expr.operator.lexeme, expr.left, expr.right);
     }
 
-    override fun visitUnaryExpr(expr: Unary): String {
+    override fun visitUnaryExpr(expr: UnaryExpression): String {
         return parenthesize(expr.operator.lexeme, expr.right);
     }
 
-    override fun visitGroupingExpr(expr: Grouping): String {
+    override fun visitGroupingExpr(expr: GroupingExpression): String {
         return parenthesize("group", expr.expression)
     }
 
-    override fun visitLiteralExpr(expr: Literal): String {
+    override fun visitLiteralExpr(expr: LiteralExpression): String {
         if (expr.value == null) return "nil";
         return expr.value.toString();
     }

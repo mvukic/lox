@@ -8,13 +8,51 @@ class LoxParser(val tokens: List<LoxToken>) {
 
     private var current = 0
 
-    fun parse(): LoxExpression? {
+    fun parse(): List<LoxStatement> {
+        val statements = mutableListOf<LoxStatement>()
+        while (!isAtEnd()) {
+            statements.add(declaration())
+        }
+        return statements
+    }
+
+    private fun declaration(): LoxStatement? {
         return try {
-            expression()
-        } catch (e: LoxParseError) {
-            LoxErrorHandler.error(e)
+            if(match(TokenType.VAR)) return varDeclaration()
+            statement()
+        } catch (error: LoxParseError) {
+            synchronize()
             null
         }
+    }
+
+    private fun varDeclaration(): LoxStatement {
+        val name = consume(TokenType.IDENTIFIER, "Expect variable name.")
+
+        var initializer: LoxExpression? = null
+        if(match(TokenType.EQUAL)) {
+            initializer = expression()
+        }
+
+        consume(TokenType.SEMICOLON, "Expect ';' after variable declaration.")
+        return VarStatement(name, initializer)
+    }
+
+    private fun statement(): LoxStatement {
+        if (match(TokenType.PRINT)) return printStatement()
+        return expressionStatement()
+    }
+
+    private fun printStatement(): LoxStatement {
+        val value = expression()
+        consume(TokenType.SEMICOLON, "Expect ';' after value.")
+        return PrintStatement(value)
+    }
+
+    private fun expressionStatement(): LoxStatement {
+        val expr = expression()
+        consume(TokenType.SEMICOLON, "Expect ';' after expression.")
+        return ExpressionStatement(expr)
     }
 
     private fun expression(): LoxExpression {
@@ -27,7 +65,7 @@ class LoxParser(val tokens: List<LoxToken>) {
         while (match(TokenType.BANG, TokenType.EQUAL)) {
             val operator = previous()
             val right = comparison()
-            expression = Binary(expression, operator, right)
+            expression = BinaryExpression(expression, operator, right)
         }
 
         return expression
@@ -38,7 +76,7 @@ class LoxParser(val tokens: List<LoxToken>) {
         while (match(TokenType.GREATER, TokenType.GREATER_EQUAL, TokenType.LESS, TokenType.LESS_EQUAL)) {
             val operator = previous()
             val right = term()
-            expression = Binary(expression, operator, right)
+            expression = BinaryExpression(expression, operator, right)
         }
 
         return expression
@@ -50,7 +88,7 @@ class LoxParser(val tokens: List<LoxToken>) {
         while (match(TokenType.MINUS, TokenType.PLUS)) {
             val operator = previous()
             val right = unary()
-            expression = Binary(expression, operator, right)
+            expression = BinaryExpression(expression, operator, right)
         }
 
         return expression
@@ -61,7 +99,7 @@ class LoxParser(val tokens: List<LoxToken>) {
         while (match(TokenType.SLASH, TokenType.STAR)) {
             val operator = previous()
             val right = unary()
-            expression = Binary(expression, operator, right)
+            expression = BinaryExpression(expression, operator, right)
         }
 
         return expression
@@ -71,23 +109,25 @@ class LoxParser(val tokens: List<LoxToken>) {
         if (match(TokenType.MINUS, TokenType.BANG)) {
             val operator = previous()
             val right = unary()
-            return Unary(operator, right)
+            return UnaryExpression(operator, right)
         }
 
         return primary()
     }
 
     private fun primary(): LoxExpression {
-        if (match(TokenType.FALSE)) return Literal(false)
-        if (match(TokenType.TRUE)) return Literal(true)
-        if (match(TokenType.NIL)) return Literal(null)
+        if (match(TokenType.FALSE)) return LiteralExpression(false)
+        if (match(TokenType.TRUE)) return LiteralExpression(true)
+        if (match(TokenType.NIL)) return LiteralExpression(null)
 
-        if (match(TokenType.NUMBER, TokenType.STRING)) return Literal(previous().literal)
+        if (match(TokenType.NUMBER, TokenType.STRING)) return LiteralExpression(previous().literal)
+
+        if(match(TokenType.IDENTIFIER)) return VarExpresssion(previous())
 
         if (match(TokenType.LEFT_PAREN)) {
             val expression = expression()
             consume(TokenType.RIGHT_PAREN, "Expected ')' after expression")
-            return Grouping(expression)
+            return GroupingExpression(expression)
         }
 
         throw error(peek(), "Expect expression.");

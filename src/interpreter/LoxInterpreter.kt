@@ -1,23 +1,30 @@
 package interpreter
 
+import env.LoxEnvironment
 import error.LoxErrorHandler
 import error.LoxRuntimeError
 import model.*
 import kotlin.contracts.ExperimentalContracts
 import kotlin.contracts.contract
 
-class LoxInterpreter : ExpressionVisitor<Any?> {
+class LoxInterpreter : ExpressionVisitor<Any?>, StatementVisitor<Unit> {
+    private val environment = LoxEnvironment()
 
-    fun interpret(expression: LoxExpression) {
+    fun interpret(statements: List<LoxStatement>) {
         try {
-            val value = evaluate(expression)
-            println(stringify(value))
+            for (statement in statements) {
+                execute(statement)
+            }
         } catch (e: LoxRuntimeError) {
             LoxErrorHandler.error(e)
         }
     }
 
-    override fun visitBinaryExpr(expr: Binary): Any {
+    private fun execute(statement: LoxStatement) {
+        statement.accept(this)
+    }
+
+    override fun visitBinaryExpr(expr: BinaryExpression): Any {
         val left = evaluate(expr.left)
         val right = evaluate(expr.right)
 
@@ -72,7 +79,7 @@ class LoxInterpreter : ExpressionVisitor<Any?> {
         error("Invalid binary expression")
     }
 
-    override fun visitUnaryExpr(expr: Unary): Any {
+    override fun visitUnaryExpr(expr: UnaryExpression): Any {
         val right = evaluate(expr.right)
 
         when (expr.operator.type) {
@@ -88,11 +95,11 @@ class LoxInterpreter : ExpressionVisitor<Any?> {
         error("Invalid unary expression")
     }
 
-    override fun visitGroupingExpr(expr: Grouping): Any? {
+    override fun visitGroupingExpr(expr: GroupingExpression): Any? {
         return evaluate(expr.expression)
     }
 
-    override fun visitLiteralExpr(expr: Literal): Any? {
+    override fun visitLiteralExpr(expr: LiteralExpression): Any? {
         return expr.value
     }
 
@@ -144,4 +151,23 @@ class LoxInterpreter : ExpressionVisitor<Any?> {
         return obj.toString()
     }
 
+    override fun visitExpressionStmt(statement: ExpressionStatement) {
+        evaluate(statement.expression)
+    }
+
+    override fun visitPrintStmt(statement: PrintStatement) {
+        println(stringify(evaluate(statement.expression)))
+    }
+
+    override fun visitVarStmt(statement: VarStatement) {
+        var value: Any? = null
+        if (statement.initializer != null) {
+            value = evaluate(statement.initializer);
+        }
+        environment.define(statement.name.lexeme, value);
+    }
+
+    override fun visitVarExpression(expr: VarExpression): Any? {
+        return environment.get(expr.name)
+    }
 }
