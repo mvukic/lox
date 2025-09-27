@@ -1,7 +1,10 @@
+package runner
+
+import scanner.LoxScanner
+import error.LoxErrorHandler
 import java.nio.file.Files
 import java.nio.file.Paths
 import kotlin.system.exitProcess
-
 
 class LoxRunner {
 

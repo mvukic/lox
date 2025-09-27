@@ -1,3 +1,5 @@
+package error
+
 object LoxErrorHandler {
     var hadError = false
 

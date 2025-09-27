@@ -1,3 +1,10 @@
+package scanner
+
+import constants.keywords
+import error.LoxErrorHandler
+import model.Token
+import model.TokenType
+
 class LoxScanner(val source: String) {
     private val tokens = mutableListOf<Token>()
     private var start = 0
@@ -104,22 +111,3 @@ class LoxScanner(val source: String) {
     }
 
 }
-
-private val keywords = mapOf(
-    "and" to TokenType.AND,
-    "class" to TokenType.CLASS,
-    "else" to TokenType.ELSE,
-    "false" to TokenType.FALSE,
-    "for" to TokenType.FOR,
-    "fun" to TokenType.FUN,
-    "if" to TokenType.IF,
-    "nil" to TokenType.NIL,
-    "or" to TokenType.OR,
-    "print" to TokenType.PRINT,
-    "return" to TokenType.RETURN,
-    "super" to TokenType.SUPER,
-    "this" to TokenType.THIS,
-    "true" to TokenType.TRUE,
-    "var" to TokenType.VAR,
-    "while" to TokenType.WHILE,
-)
