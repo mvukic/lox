@@ -1,14 +1,15 @@
 package runner
 
-import ast.AstPrinter
-import scanner.LoxScanner
 import error.LoxErrorHandler
+import interpreter.LoxInterpreter
 import parser.LoxParser
+import scanner.LoxScanner
 import java.nio.file.Files
 import java.nio.file.Paths
 import kotlin.system.exitProcess
 
 class LoxRunner {
+    private val interpreter = LoxInterpreter()
 
     fun repl() {
         println("REPL mode")
@@ -26,6 +27,7 @@ class LoxRunner {
         val source = Files.readString(Paths.get(path))
         run(source)
         if (LoxErrorHandler.hadError) exitProcess(1)
+        if (LoxErrorHandler.hadRuntimeError) exitProcess(1)
     }
 
     private fun run(source: String) {
@@ -34,10 +36,10 @@ class LoxRunner {
 
         if (LoxErrorHandler.hadError) return
 
-        val printer = AstPrinter()
         if (expression != null) {
-            println(printer.print(expression))
+            interpreter.interpret(expression)
         }
+
     }
 
 }

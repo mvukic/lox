@@ -1,6 +1,7 @@
 package parser
 
 import error.LoxErrorHandler
+import error.LoxParseError
 import model.*
 
 class LoxParser(val tokens: List<LoxToken>) {
@@ -11,6 +12,7 @@ class LoxParser(val tokens: List<LoxToken>) {
         return try {
             expression()
         } catch (e: LoxParseError) {
+            LoxErrorHandler.error(e)
             null
         }
     }
@@ -98,7 +100,7 @@ class LoxParser(val tokens: List<LoxToken>) {
 
     private fun error(token: LoxToken, message: String): LoxParseError {
         LoxErrorHandler.error(token, message)
-        return LoxParseError(message)
+        return LoxParseError(token, message)
     }
 
     private fun match(vararg types: TokenType): Boolean {
