@@ -2,21 +2,21 @@ package scanner
 
 import constants.LOX_KEYWORDS
 import error.LoxErrorHandler
-import model.Token
+import model.LoxToken
 import model.TokenType
 
 class LoxScanner(val source: String) {
-    private val tokens = mutableListOf<Token>()
+    private val tokens = mutableListOf<LoxToken>()
     private var start = 0
     private var current = 0
     private var line = 1
 
-    fun scanTokens(): List<Token> {
+    fun scanTokens(): List<LoxToken> {
         while (!isAtEnd()) {
             start = current
             scanToken()
         }
-        tokens.add(Token(TokenType.EOF, "", null, line))
+        tokens.add(LoxToken(TokenType.EOF, "", null, line))
         return tokens
     }
 
@@ -67,7 +67,7 @@ class LoxScanner(val source: String) {
 
     private fun addToken(type: TokenType, literal: Any?) {
         val text = source.substring(start, current)
-        tokens.add(Token(type, text, literal, line))
+        tokens.add(LoxToken(type, text, literal, line))
     }
 
     private fun match(expected: Char): Boolean {

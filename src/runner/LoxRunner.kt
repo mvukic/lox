@@ -1,7 +1,9 @@
 package runner
 
+import ast.AstPrinter
 import scanner.LoxScanner
 import error.LoxErrorHandler
+import parser.LoxParser
 import java.nio.file.Files
 import java.nio.file.Paths
 import kotlin.system.exitProcess
@@ -27,11 +29,14 @@ class LoxRunner {
     }
 
     private fun run(source: String) {
-        val scanner = LoxScanner(source)
-        val tokens = scanner.scanTokens()
+        val tokens = LoxScanner(source).scanTokens()
+        val expression = LoxParser(tokens).parse()
 
-        for (token in tokens) {
-            println(token)
+        if (LoxErrorHandler.hadError) return
+
+        val printer = AstPrinter()
+        if (expression != null) {
+            println(printer.print(expression))
         }
     }
 

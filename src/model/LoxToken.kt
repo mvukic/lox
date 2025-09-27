@@ -1,6 +1,6 @@
 package model
 
-data class Token(
+data class LoxToken(
     val type: TokenType,
     val lexeme: String,
     val literal: Any?,

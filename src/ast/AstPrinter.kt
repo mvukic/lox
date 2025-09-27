@@ -5,7 +5,7 @@ import model.*
 
 class AstPrinter : ExpressionVisitor<String> {
 
-    fun print(expression: Expression): String {
+    fun print(expression: LoxExpression): String {
         return expression.accept(this)
     }
 
@@ -26,7 +26,7 @@ class AstPrinter : ExpressionVisitor<String> {
         return expr.value.toString();
     }
 
-    private fun parenthesize(name: String, vararg expressions: Expression) = buildString {
+    private fun parenthesize(name: String, vararg expressions: LoxExpression) = buildString {
         append("(")
         append(name)
         for (expression in expressions) {
