@@ -9,6 +9,7 @@ fun main(args: Array<String>) {
         1 -> lox.file(args[0])
         else -> help()
     }
+
 }
 
 private fun help() {

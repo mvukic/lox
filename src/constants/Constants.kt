@@ -2,7 +2,7 @@ package constants
 
 import model.TokenType
 
-val keywords = mapOf(
+val LOX_KEYWORDS = mapOf(
     "and" to TokenType.AND,
     "class" to TokenType.CLASS,
     "else" to TokenType.ELSE,

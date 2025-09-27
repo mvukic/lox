@@ -1,6 +1,6 @@
 package scanner
 
-import constants.keywords
+import constants.LOX_KEYWORDS
 import error.LoxErrorHandler
 import model.Token
 import model.TokenType
@@ -106,7 +106,7 @@ class LoxScanner(val source: String) {
         while (isAlphanumeric(peek())) advance()
 
         val text = source.substring(start, current)
-        val type = keywords[text] ?: TokenType.IDENTIFIER
+        val type = LOX_KEYWORDS[text] ?: TokenType.IDENTIFIER
         addToken(type)
     }
 

@@ -13,6 +13,5 @@ data class Token(
         if (lexeme.isNotEmpty()) append(" lexeme=$lexeme")
         if (literal != null) append(" literal=$literal")
         append(" ]")
-
     }
 }
