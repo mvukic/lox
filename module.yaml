@@ -1,0 +1,6 @@
+product: jvm/app
+
+settings:
+  kotlin:
+    languageVersion: 2.2
+    serialization: json
