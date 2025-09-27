@@ -100,7 +100,7 @@ class LoxScanner(val source: String) {
         while (isAlphanumeric(peek())) advance()
 
         val text = source.substring(start, current)
-        val type = keywords.get(text) ?: TokenType.IDENTIFIER
+        val type = keywords[text] ?: TokenType.IDENTIFIER
         addToken(type)
     }
 

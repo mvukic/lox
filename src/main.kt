@@ -1,23 +1,25 @@
-import java.io.BufferedReader
-import java.io.InputStreamReader
 import java.nio.file.Files
 import java.nio.file.Paths
 import kotlin.system.exitProcess
 
 
 fun main(args: Array<String>) {
-    if (args.size > 1) {
-        printHelp()
+    when (args.size) {
+        0 -> runPrompt()
+        1 -> runFile(args[0])
+        else -> printHelp()
     }
-    if (args.size == 1) {
-        runFile(args[0])
-    }
-    runPrompt()
 }
 
-private fun printHelp() {
-    println("Usage: klox [script]")
-    exitProcess(0)
+private fun runPrompt() {
+    println("Running in interpreter mode")
+
+    while (true) {
+        print("> ")
+        val source = readlnOrNull() ?: break
+        runSource(source)
+        LoxErrorHandler.hadError = false
+    }
 }
 
 private fun runFile(path: String) {
@@ -26,23 +28,17 @@ private fun runFile(path: String) {
     if (LoxErrorHandler.hadError) exitProcess(1)
 }
 
-private fun runPrompt() {
-    val input = InputStreamReader(System.`in`)
-    val reader = BufferedReader(input)
-
-    while (true) {
-        print("> ")
-        val source = reader.readLine() ?: break
-        runSource(source)
-        LoxErrorHandler.hadError = false
-    }
-}
-
 private fun runSource(source: String) {
+    println("Running source file")
     val scanner = LoxScanner(source)
     val tokens = scanner.scanTokens()
 
     for (token in tokens) {
         println(token)
     }
+}
+
+private fun printHelp() {
+    println("Usage: klox [script]")
+    exitProcess(0)
 }
