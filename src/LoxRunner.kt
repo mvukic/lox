@@ -1,4 +1,3 @@
-import java.io.BufferedReader
 import java.nio.file.Files
 import java.nio.file.Paths
 import kotlin.system.exitProcess
@@ -18,7 +17,7 @@ class LoxRunner {
     }
 
     fun file(path: String) {
-        println("Interpreting source file: $path")
+        println("Executing source file: $path")
         val source = Files.readString(Paths.get(path))
         run(source)
         if (LoxErrorHandler.hadError) exitProcess(1)
