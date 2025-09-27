@@ -21,3 +21,9 @@ class VarStatement(val name: LoxToken, val initializer: LoxExpression?) : LoxSta
         return visitor.visitVarStmt(this)
     }
 }
+
+class BlockStatement(val statements: List<LoxStatement>) : LoxStatement() {
+    override fun <R> accept(visitor: StatementVisitor<R>): R {
+        return visitor.visitBlockStmt(this)
+    }
+}

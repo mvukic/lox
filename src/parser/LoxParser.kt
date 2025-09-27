@@ -11,14 +11,17 @@ class LoxParser(val tokens: List<LoxToken>) {
     fun parse(): List<LoxStatement> {
         val statements = mutableListOf<LoxStatement>()
         while (!isAtEnd()) {
-            statements.add(declaration())
+            val decl = declaration()
+            if (decl != null) {
+                statements.add(decl)
+            }
         }
         return statements
     }
 
     private fun declaration(): LoxStatement? {
         return try {
-            if(match(TokenType.VAR)) return varDeclaration()
+            if (match(TokenType.VAR)) return varDeclaration()
             statement()
         } catch (error: LoxParseError) {
             synchronize()
@@ -30,7 +33,7 @@ class LoxParser(val tokens: List<LoxToken>) {
         val name = consume(TokenType.IDENTIFIER, "Expect variable name.")
 
         var initializer: LoxExpression? = null
-        if(match(TokenType.EQUAL)) {
+        if (match(TokenType.EQUAL)) {
             initializer = expression()
         }
 
@@ -40,7 +43,23 @@ class LoxParser(val tokens: List<LoxToken>) {
 
     private fun statement(): LoxStatement {
         if (match(TokenType.PRINT)) return printStatement()
+        if (match(TokenType.LEFT_BRACE)) return BlockStatement(block())
         return expressionStatement()
+    }
+
+    private fun block(): List<LoxStatement> {
+        val statements = mutableListOf<LoxStatement>()
+
+        while (!check(TokenType.RIGHT_BRACE) && !isAtEnd()) {
+            val decl = declaration()
+            if (decl != null) {
+                statements.add(decl)
+            }
+        }
+
+        consume(TokenType.RIGHT_BRACE, "Expect '}' after block.");
+
+        return statements
     }
 
     private fun printStatement(): LoxStatement {
@@ -56,7 +75,24 @@ class LoxParser(val tokens: List<LoxToken>) {
     }
 
     private fun expression(): LoxExpression {
-        return equality()
+        return assignment()
+    }
+
+    private fun assignment(): LoxExpression {
+        val expression = equality()
+
+        if (match(TokenType.EQUAL)) {
+            val equals = previous()
+            val value = assignment()
+
+            if (expression is VarExpression) {
+                return AssignExpression(expression.name, value)
+            }
+
+            error(equals, "Invalid assignment target.")
+        }
+
+        return expression
     }
 
     private fun equality(): LoxExpression {
@@ -122,7 +158,7 @@ class LoxParser(val tokens: List<LoxToken>) {
 
         if (match(TokenType.NUMBER, TokenType.STRING)) return LiteralExpression(previous().literal)
 
-        if(match(TokenType.IDENTIFIER)) return VarExpresssion(previous())
+        if (match(TokenType.IDENTIFIER)) return VarExpression(previous())
 
         if (match(TokenType.LEFT_PAREN)) {
             val expression = expression()

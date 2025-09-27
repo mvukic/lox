@@ -34,3 +34,9 @@ class VarExpression(val name: LoxToken) : LoxExpression() {
         return visitor.visitVarExpression(this)
     }
 }
+
+class AssignExpression(val name: LoxToken, val value: LoxExpression) : LoxExpression() {
+    override fun <R> accept(visitor: ExpressionVisitor<R>): R {
+        return visitor.visitAssignExpression(this)
+    }
+}

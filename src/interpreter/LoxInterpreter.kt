@@ -8,7 +8,7 @@ import kotlin.contracts.ExperimentalContracts
 import kotlin.contracts.contract
 
 class LoxInterpreter : ExpressionVisitor<Any?>, StatementVisitor<Unit> {
-    private val environment = LoxEnvironment()
+    private var environment = LoxEnvironment()
 
     fun interpret(statements: List<LoxStatement>) {
         try {
@@ -169,5 +169,28 @@ class LoxInterpreter : ExpressionVisitor<Any?>, StatementVisitor<Unit> {
 
     override fun visitVarExpression(expr: VarExpression): Any? {
         return environment.get(expr.name)
+    }
+
+    override fun visitAssignExpression(expr: AssignExpression): Any? {
+        val value = evaluate(expr.value)
+        environment.assign(expr.name, value)
+        return value
+    }
+
+    override fun visitBlockStmt(statement: BlockStatement) {
+        executeBlock(statement.statements, LoxEnvironment(environment))
+    }
+
+    fun executeBlock(statements: List<LoxStatement>, environment: LoxEnvironment) {
+        val previous = this.environment
+        try {
+            this.environment = environment
+
+            for (statement in statements) {
+                execute(statement)
+            }
+        } finally {
+            this.environment = previous
+        }
     }
 }
