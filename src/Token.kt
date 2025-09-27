@@ -4,5 +4,13 @@ data class Token(
     val literal: Any?,
     val line: Int
 ) {
-    override fun toString() = "$type $lexeme $literal"
+    override fun toString() = buildString {
+        append("Token")
+        append("[ ")
+        append("type=$type")
+        if (lexeme.isNotEmpty()) append(" lexeme=$lexeme")
+        if (literal != null) append(" literal=$literal")
+        append(" ]")
+
+    }
 }

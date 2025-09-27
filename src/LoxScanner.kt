@@ -49,7 +49,6 @@ class LoxScanner(val source: String) {
         }
     }
 
-
     private fun peek() = if (isAtEnd()) null else source[current]
     private fun peekNext() = if (current + 1 >= source.length) null else source[current + 1]
     private fun isAtEnd() = current >= source.length
